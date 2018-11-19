@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace DS.Bll
 {
@@ -67,21 +68,21 @@ namespace DS.Bll
         public ValidationResultViewModel ValidateStringLength<T, TT>(TT validator)
         {
             var result = new ValidationResultViewModel();
-            //foreach (var propertyInfoModel in typeof(T).GetProperties().Where(m => m.PropertyType.FullName == "System.String"))
-            //{
-            //    var propertyInfoViewModel = validator.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyInfoModel.Name);
-            //    if (propertyInfoViewModel == null) continue;
-            //    int target = propertyInfoViewModel.GetValue(validator) != null ? propertyInfoViewModel.GetValue(validator).ToString().Length : 0;
-            //    var length = GetColumnLength<T>(propertyInfoModel.Name);
-            //    if (target > length)
-            //    {
-            //        var error = new ModelStateError();
-            //        result.ErrorFlag = true;
-            //        error.Key = propertyInfoModel.Name;
-            //        error.Message = string.Format(ValidatorMessage.length_exceed, propertyInfoModel.Name, length.ToString());
-            //        result.ModelStateErrorList.Add(error);
-            //    }
-            //}
+            foreach (var propertyInfoModel in typeof(T).GetProperties().Where(m => m.PropertyType.FullName == "System.String"))
+            {
+                var propertyInfoViewModel = validator.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyInfoModel.Name);
+                if (propertyInfoViewModel == null) continue;
+                int target = propertyInfoViewModel.GetValue(validator) != null ? propertyInfoViewModel.GetValue(validator).ToString().Length : 0;
+                var length = typeof(T).GetProperty("ObjectiveDesc").GetCustomAttributes(typeof(StringLengthAttribute), false).Cast<StringLengthAttribute>().SingleOrDefault();
+                if (length != null && target > length.MaximumLength)
+                {
+                    var error = new ModelStateError();
+                    result.ErrorFlag = true;
+                    error.Key = propertyInfoModel.Name;
+                    error.Message = string.Format("{0} ความยาวเกินกำหนด (ไม่เกิน {1} ตัวอักษร)", propertyInfoModel.Name, length.ToString());
+                    result.ModelStateErrorList.Add(error);
+                }
+            }
             return result;
         }
 

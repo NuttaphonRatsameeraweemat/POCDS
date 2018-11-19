@@ -7,7 +7,6 @@ using DS.Helper.Interfaces;
 using System.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using DS.Bll.Context;
 using System.Transactions;
@@ -36,6 +35,11 @@ namespace DS.Bll
         private readonly IAttachment _attachmemt;
 
         /// <summary>
+        /// The Utility function.
+        /// </summary>
+        private readonly IUtilityService _utility;
+
+        /// <summary>
         /// The elastic search function.
         /// </summary>
         private readonly IElasticSearch<CaSearchViewModel> _elastic;
@@ -50,11 +54,18 @@ namespace DS.Bll
         /// <param name="unitOfWork">The utilities unit of work.</param>
         /// <param name="mapper">The auto mapper.</param>
         /// <param name="attachmemt">The attachment file function.</param>
-        public Ca(IUnitOfWork unitOfWork, IMapper mapper, IAttachment attachmemt, IElasticSearch<CaSearchViewModel> elastic)
+        /// <param name="utility">The utility function.</param>
+        /// <param name="elastic">The elastic search function.</param>
+        public Ca(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IAttachment attachmemt,
+            IUtilityService utility,
+            IElasticSearch<CaSearchViewModel> elastic)
         {
             _unitOfWork = unitOfWork;
             _attachmemt = attachmemt;
             _mapper = mapper;
+            _utility = utility;
             _elastic = elastic;
         }
 
@@ -69,8 +80,7 @@ namespace DS.Bll
         /// <returns></returns>
         public CaViewModel Get(int id)
         {
-            var result = new CaViewModel();
-            return result;
+            return _mapper.Map<DS.Data.Pocos.Ca, CaViewModel>(_unitOfWork.GetRepository<DS.Data.Pocos.Ca>().GetById(id)); ;
         }
 
         /// <summary>
@@ -114,7 +124,23 @@ namespace DS.Bll
         /// <returns></returns>
         private ValidationResultViewModel VaildateData(CaViewModel model)
         {
-            var result = new ValidationResultViewModel();
+            var result = _utility.ValidateStringLength<DS.Data.Pocos.Ca, CaViewModel>(model);
+
+            if (string.IsNullOrWhiteSpace(model.RequestFor))
+            {
+                var property = model.GetType().GetProperty(nameof(model.RequestFor));
+                result.ModelStateErrorList.Add(new ModelStateError
+                {
+                    Key = "RequestFor",
+                    Message = ConstantValue.PleaseFill + property.Name
+                });
+            }
+
+            if (result.ModelStateErrorList.Count > 0)
+            {
+                result.ErrorFlag = true;
+            }
+
             return result;
         }
 
@@ -122,10 +148,10 @@ namespace DS.Bll
         /// Get Ca List.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<CaSearchViewModel> GetList()
+        public IEnumerable<CaSearchViewModel> GetList(DataTableAjaxPost model)
         {
             List<CaSearchViewModel> result = new List<CaSearchViewModel>();
-            result = _elastic.SearchFilter(this.GetQueryFilter(string.Empty)).ToList();
+            result = _elastic.SearchFilter(this.GetQueryFilter(model.Search)).ToList();
             return result;
         }
 

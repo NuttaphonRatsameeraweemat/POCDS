@@ -54,11 +54,14 @@ namespace DS.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
+        public IActionResult Get(int id) => Ok(_ca.Get(id));
+
+        [HttpPost]
         [Route("GetList")]
-        public IActionResult GetList()
+        public IActionResult GetList(DataTableAjaxPost model)
         {
-            return Ok(_ca.GetList());
+            return Ok(_ca.GetList(model));
         }
 
         #endregion

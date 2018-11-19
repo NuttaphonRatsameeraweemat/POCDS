@@ -9,6 +9,7 @@ namespace DS.Bll.Context
         public const string EmployeeTemplate = "คุณ{0} {1}";
         public const string DateTimeFormat = "yyyyMMddHHmmssfff";
         public const string TransStatusSaved = "SAVEREQUEST";
+        public const string PleaseFill = "โปรดกรอกข้อมูล";
 
         public const string CAIndex = "ca_index";
         public const string CAType = "ca_type";

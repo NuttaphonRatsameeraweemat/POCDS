@@ -8,5 +8,6 @@ namespace DS.Bll.Interfaces
     public interface IUtilityService
     {
         IEnumerable<ValueHelpViewModel> GetValueHelp(string valueType);
+        ValidationResultViewModel ValidateStringLength<T, TT>(TT validator);
     }
 }
