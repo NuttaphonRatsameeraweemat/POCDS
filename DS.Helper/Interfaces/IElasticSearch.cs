@@ -11,7 +11,8 @@ namespace DS.Helper.Interfaces
         IEnumerable<T> SearchFilter(Func<SearchDescriptor<T>, ISearchRequest> searchFunc);
         string Insert(T model, string index, string type);
         string Update(T model, string index, string type);
-        string Delete(int id, Func<DeleteDescriptor<T>, IDeleteRequest> deleteFunc);
-        string DeleteAll(string index, Func<DeleteByQueryDescriptor<T>, IDeleteByQueryRequest> deleteFunc);
+        string Delete(int id, string index, string type);
+        string DeleteAll(string index, string type);
+        string Bulk(List<T> modelList, string index, string type);
     }
 }

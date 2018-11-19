@@ -72,7 +72,7 @@ namespace DS.Extensions
         /// <param name="services">The service collection.</param>
         public static void ConfigureElasticSearch(this IServiceCollection services)
         {
-            //services.AddSingleton<, LoggerManager>();
+            services.AddSingleton(typeof(IElasticSearch<>), typeof(ElasticSearch<>));
         }
 
         /// <summary>

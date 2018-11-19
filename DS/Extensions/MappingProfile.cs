@@ -11,8 +11,6 @@ namespace DS.Extensions
             // Add as many of these lines as you need to map your objects
             CreateMap<Ca, CaViewModel>();
             CreateMap<CaViewModel, Ca>();
-            CreateMap<Hremployee, EmployeeViewModel>();
-            CreateMap<EmployeeViewModel, Hremployee>();
         }
     }
 }

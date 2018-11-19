@@ -41,10 +41,11 @@ namespace DS.Controllers
 
         [HttpPost]
         [Route("Save")]
-        public IActionResult Save()
+        public IActionResult Save([FromBody]data data)
         {
             var file = Request.Form.Files;
-            var json = JsonConvert.DeserializeObject<file>(Request.Form["dataFile"]);
+            var jsonFile = JsonConvert.DeserializeObject<List<file>>(Request.Form["dataFile"]);
+            var json = JsonConvert.DeserializeObject<dataJson>(Request.Form["dataForm"]);
             var response = _ca.Add(new CaViewModel(), file);
             if (response.ErrorFlag)
             {
@@ -53,13 +54,31 @@ namespace DS.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("GetList")]
+        public IActionResult GetList()
+        {
+            return Ok(_ca.GetList());
+        }
+
         #endregion
-        
+
     }
 
     public class file
     {
         public string name { get; set; }
+    }
+
+    public class dataJson
+    {
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+    }
+
+    public class data
+    {
+        public string test { get; set; }
     }
 
 }

@@ -27,6 +27,7 @@ namespace DS
             services.ConfigureBll();
             services.ConfigureLoggerService();
             services.ConfigureCors();
+            services.ConfigureElasticSearch();
 
             services.AddAutoMapper();
             services.AddMvc();

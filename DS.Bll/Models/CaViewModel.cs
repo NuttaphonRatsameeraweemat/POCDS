@@ -40,13 +40,6 @@ namespace DS.Bll.Models
         public string CreateByText { get; set; }
         public string ReceiveType { get; set; }
         public string ReceiveRemark { get; set; }
-        //Value Help
-        public List<EmployeeViewModel> EmployeeList { get; set; }
-        public List<ValueHelpViewModel> PaymentPlaceList { get; set; }
-        public List<CompanyViewModel> ComCodeList { get; set; }
-        public List<ValueHelpViewModel> BusinessPlaceList { get; set; }
-        public List<ValueHelpViewModel> CurrencyList { get; set; }
-        public List<ValueHelpViewModel> ReceiveTypeList { get; set; }
         public string StatusText { get; set; }
         //Attachment List
         public List<AttachmentViewModel> AttachmentList { get; set; }
