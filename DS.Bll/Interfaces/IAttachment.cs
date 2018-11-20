@@ -8,6 +8,6 @@ namespace DS.Bll.Interfaces
 {
     public interface IAttachment
     {
-        ValidationResultViewModel UploadFile(IFormFileCollection model, int dataId, string processCode, string folder1 = "");
+        ValidationResultViewModel UploadFile(List<AttachmentViewModel> model, int dataId, string processCode, string folder1 = "");
     }
 }

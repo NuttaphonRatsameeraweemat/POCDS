@@ -67,7 +67,7 @@ namespace DS.Bll
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public ValidationResultViewModel UploadFile(IFormFileCollection model, int dataId, string processCode, string folder1 = "")
+        public ValidationResultViewModel UploadFile(List<AttachmentViewModel> model, int dataId, string processCode, string folder1 = "")
         {
             var result = new ValidationResultViewModel();
             string documentPath = GetDocumentFilePath(processCode, folder1);
@@ -83,18 +83,23 @@ namespace DS.Bll
                     DataKey = dataId.ToString(),
                     FileExtension = Path.GetExtension(item.FileName),
                     FileName = item.FileName,
-                    FileSize = Convert.ToInt32(item.Length),
+                    FileSize = item.FileSize,
                     FileUniqueKey = uniqueKey,
                     ProcessCode = processCode,
                     SavedFileName = string.Format("{0}_{1}", uniqueKey, item.FileName)
                 };
-                using (var ms = new MemoryStream())
-                {
-                    item.CopyTo(ms);
-                    var fileContent = ms.ToArray();
-                    string savePath = Path.Combine(documentPath, attachment.SavedFileName);
-                    File.WriteAllBytes(savePath, fileContent);
-                }
+                var file = Convert.FromBase64String(item.FileBase64);
+                string savePath = Path.Combine(documentPath, attachment.SavedFileName);
+                File.WriteAllBytes(savePath, file);
+
+                //using (var ms = new MemoryStream())
+                //{
+                //    item.CopyTo(ms);
+                //    var fileContent = ms.ToArray();
+                //    string savePath = Path.Combine(documentPath, attachment.SavedFileName);
+                //    File.WriteAllBytes(savePath, fileContent);
+                //}
+
                 _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().Add(attachment);
                 _unitOfWork.Complete();
             }

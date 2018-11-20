@@ -89,9 +89,9 @@ namespace DS.Bll
         /// <param name="model">The infomation ca.</param>
         /// <param name="file">The content file.</param>
         /// <returns></returns>
-        public ValidationResultViewModel Add(CaViewModel model, IFormFileCollection file)
+        public ValidationResultViewModel Add(CaViewModel model)
         {
-            var response = VaildateData(model);
+            var response = ValidateData(model);
             if (response.ErrorFlag)
             {
                 return response;
@@ -110,7 +110,7 @@ namespace DS.Bll
                 _unitOfWork.Complete();
 
                 //Attachment file
-                _attachmemt.UploadFile(file, ca.Id, CaViewModel.ProcessCode, ca.Cano);
+                _attachmemt.UploadFile(model.AttachmentList, 8000, CaViewModel.ProcessCode, "18DOC");
                 scope.Complete();
             }
 
@@ -122,7 +122,7 @@ namespace DS.Bll
         /// </summary>
         /// <param name="model">The infomation ca.</param>
         /// <returns></returns>
-        private ValidationResultViewModel VaildateData(CaViewModel model)
+        private ValidationResultViewModel ValidateData(CaViewModel model)
         {
             var result = _utility.ValidateStringLength<DS.Data.Pocos.Ca, CaViewModel>(model);
 
@@ -131,7 +131,7 @@ namespace DS.Bll
                 var property = model.GetType().GetProperty(nameof(model.RequestFor));
                 result.ModelStateErrorList.Add(new ModelStateError
                 {
-                    Key = "RequestFor",
+                    Key = property.Name,
                     Message = ConstantValue.PleaseFill + property.Name
                 });
             }

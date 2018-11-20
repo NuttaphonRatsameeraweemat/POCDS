@@ -8,7 +8,7 @@ namespace DS.Bll.Interfaces
 {
     public interface ICa
     {
-        ValidationResultViewModel Add(CaViewModel model, IFormFileCollection file);
+        ValidationResultViewModel Add(CaViewModel model);
         CaViewModel Get(int id);
         IEnumerable<CaSearchViewModel> GetList(DataTableAjaxPost model);
     }

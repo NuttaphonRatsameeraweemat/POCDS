@@ -1,5 +1,7 @@
 ﻿using DS.Bll.Interfaces;
+using DS.Bll.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DS.Controllers
 {
@@ -37,6 +39,13 @@ namespace DS.Controllers
         public IActionResult UploadFile()
         {
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("Upload")]
+        public IActionResult Upload(List<AttachmentViewModel> model)
+        {
+            return Ok(_attachment.UploadFile(model, 999999, "Temp"));
         }
 
         #endregion

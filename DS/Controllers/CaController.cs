@@ -41,12 +41,9 @@ namespace DS.Controllers
 
         [HttpPost]
         [Route("Save")]
-        public IActionResult Save([FromBody]data data)
+        public IActionResult Save([FromBody]CaViewModel model)
         {
-            var file = Request.Form.Files;
-            var jsonFile = JsonConvert.DeserializeObject<List<file>>(Request.Form["dataFile"]);
-            var json = JsonConvert.DeserializeObject<dataJson>(Request.Form["dataForm"]);
-            var response = _ca.Add(new CaViewModel(), file);
+            var response = _ca.Add(model);
             if (response.ErrorFlag)
             {
                 return BadRequest(response);
@@ -66,22 +63,6 @@ namespace DS.Controllers
 
         #endregion
 
-    }
-
-    public class file
-    {
-        public string name { get; set; }
-    }
-
-    public class dataJson
-    {
-        public string firstname { get; set; }
-        public string lastname { get; set; }
-    }
-
-    public class data
-    {
-        public string test { get; set; }
     }
 
 }
