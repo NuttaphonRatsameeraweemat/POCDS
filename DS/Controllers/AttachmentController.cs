@@ -33,14 +33,7 @@ namespace DS.Controllers
         #endregion
 
         #region [Methods]
-
-        [HttpPost]
-        [Route("UploadFile")]
-        public IActionResult UploadFile()
-        {
-            return Ok();
-        }
-
+        
         [HttpPost]
         [Route("Upload")]
         public IActionResult Upload(List<AttachmentViewModel> model)

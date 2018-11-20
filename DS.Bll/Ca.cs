@@ -110,7 +110,7 @@ namespace DS.Bll
                 _unitOfWork.Complete();
 
                 //Attachment file
-                _attachmemt.UploadFile(model.AttachmentList, 8000, CaViewModel.ProcessCode, "18DOC");
+                _attachmemt.UploadFile(model.AttachmentList, ca.Id, CaViewModel.ProcessCode, ca.Cano);
                 scope.Complete();
             }
 

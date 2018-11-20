@@ -10,5 +10,6 @@ namespace DS.Bll.Models
         public string FileName { get; set; }
         public int FileSize { get; set; }
         public string FileBase64 { get; set; }
+        public bool IsDelete { get; set; }
     }
 }
