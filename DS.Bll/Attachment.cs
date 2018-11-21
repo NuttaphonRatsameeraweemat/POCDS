@@ -5,6 +5,7 @@ using DS.Data.Repository.Interfaces;
 using DS.Helper.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
@@ -75,6 +76,48 @@ namespace DS.Bll
             this.CreateDirectory(processCode, folder1);
             foreach (var item in model)
             {
+                if (!this.IsDelete(item,documentPath))
+                {
+                    this.SaveAttachment(item, dataId, attachDate, processCode, documentPath);
+                }
+            }
+            _unitOfWork.Complete();
+            return result;
+        }
+
+        /// <summary>
+        /// Delete file from local and row.
+        /// </summary>
+        /// <param name="item">The attachment data.</param>
+        /// <param name="documentPath">The document path file.</param>
+        /// <returns></returns>
+        private bool IsDelete(AttachmentViewModel item, string documentPath)
+        {
+            bool result = false;
+            if (item.IsDelete)
+            {
+                result = true;
+                var attach = _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().GetById(item.ID);
+                if (File.Exists(Path.Combine(documentPath,attach.SavedFileName)))
+                {
+                    File.Delete(Path.Combine(documentPath, attach.SavedFileName));
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Save file to local and insert to database.
+        /// </summary>
+        /// <param name="item">The attachment data.</param>
+        /// <param name="dataId">The identity id of document.</param>
+        /// <param name="attachDate">The attachDate.</param>
+        /// <param name="processCode">The menu key.</param>
+        /// <param name="documentPath">The document path file.</param>
+        private void SaveAttachment(AttachmentViewModel item, int dataId, DateTime attachDate, string processCode, string documentPath)
+        {
+            if (item.ID == 0)
+            {
                 var uniqueKey = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
                 var attachment = new DS.Data.Pocos.Attachment
                 {
@@ -92,25 +135,15 @@ namespace DS.Bll
                 string savePath = Path.Combine(documentPath, attachment.SavedFileName);
                 File.WriteAllBytes(savePath, file);
 
-                //using (var ms = new MemoryStream())
-                //{
-                //    item.CopyTo(ms);
-                //    var fileContent = ms.ToArray();
-                //    string savePath = Path.Combine(documentPath, attachment.SavedFileName);
-                //    File.WriteAllBytes(savePath, fileContent);
-                //}
-
                 _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().Add(attachment);
-                _unitOfWork.Complete();
             }
-            return result;
         }
 
         /// <summary>
         /// Get document path file.
         /// </summary>
-        /// <param name="processCode"></param>
-        /// <param name="folder1"></param>
+        /// <param name="processCode">The menu key.</param>
+        /// <param name="folder1">The sub folder</param>
         /// <returns></returns>
         public string GetDocumentFilePath(string processCode, string folder1)
         {

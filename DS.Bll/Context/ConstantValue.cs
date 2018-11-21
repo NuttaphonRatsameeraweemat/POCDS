@@ -6,11 +6,22 @@ namespace DS.Bll.Context
 {
     public class ConstantValue
     {
+        //Template format.
         public const string EmployeeTemplate = "คุณ{0} {1}";
         public const string DateTimeFormat = "yyyyMMddHHmmssfff";
-        public const string TransStatusSaved = "SAVEREQUEST";
-        public const string PleaseFill = "โปรดกรอกข้อมูล";
+       
+        //Role and Menu.
+        public const string RootMenuCode = "ROOT";
+        public const string RoleEveryone = "Role_Everyone";
+        public const string RoleSuperAdmin = "Role_Super_Admin";
 
+        //Configuration, record status.
+        public const string ConfigStatusActive = "ACTIVE";
+
+        //Status.
+        public const string TransStatusSaved = "SAVEREQUEST";
+
+        //Elastic index and type.
         public const string CAIndex = "ca_index";
         public const string CAType = "ca_type";
 

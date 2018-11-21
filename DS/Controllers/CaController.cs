@@ -40,8 +40,8 @@ namespace DS.Controllers
         #region [Methods]
 
         [HttpPost]
-        [Route("Save")]
-        public IActionResult Save([FromBody]CaViewModel model)
+        [Route("Add")]
+        public IActionResult Add([FromBody]CaViewModel model)
         {
             var response = _ca.Add(model);
             if (response.ErrorFlag)
@@ -51,12 +51,19 @@ namespace DS.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("Edit")]
+        public IActionResult Edit([FromBody]CaViewModel model)
+        {
+            return Ok();
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get(int id) => Ok(_ca.Get(id));
 
         [HttpPost]
         [Route("GetList")]
-        public IActionResult GetList(DataTableAjaxPost model)
+        public IActionResult GetList([FromBody]DataTableAjaxPost model)
         {
             return Ok(_ca.GetList(model));
         }

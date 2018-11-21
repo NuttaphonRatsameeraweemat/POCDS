@@ -80,14 +80,13 @@ namespace DS.Bll
         /// <returns></returns>
         public CaViewModel Get(int id)
         {
-            return _mapper.Map<DS.Data.Pocos.Ca, CaViewModel>(_unitOfWork.GetRepository<DS.Data.Pocos.Ca>().GetById(id)); ;
+            return _mapper.Map<DS.Data.Pocos.Ca, CaViewModel>(_unitOfWork.GetRepository<DS.Data.Pocos.Ca>().GetById(id));
         }
 
         /// <summary>
         /// Insert Ca and upload file.
         /// </summary>
         /// <param name="model">The infomation ca.</param>
-        /// <param name="file">The content file.</param>
         /// <returns></returns>
         public ValidationResultViewModel Add(CaViewModel model)
         {
@@ -98,7 +97,40 @@ namespace DS.Bll
             }
             using (var scope = new TransactionScope())
             {
-                var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == "").FirstOrDefault();
+                var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == "BOONRAWD_LOCAL\\ds01").FirstOrDefault();
+                var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
+                ca.Cano = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
+                ca.Status = ConstantValue.TransStatusSaved;
+                ca.CreateBy = emp.EmpNo;
+                ca.CreateOrg = emp.OrgId;
+                ca.CreatePos = emp.PositionId;
+                ca.CreateDate = DateTime.Now;
+                _unitOfWork.GetRepository<DS.Data.Pocos.Ca>().Add(ca);
+                _unitOfWork.Complete();
+
+                //Attachment file
+                _attachmemt.UploadFile(model.AttachmentList, ca.Id, CaViewModel.ProcessCode, ca.Cano);
+                scope.Complete();
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Update Ca and upload file.
+        /// </summary>
+        /// <param name="model">The infomation ca.</param>
+        /// <returns></returns>
+        public ValidationResultViewModel Edit(CaViewModel model)
+        {
+            var response = ValidateData(model);
+            if (response.ErrorFlag)
+            {
+                return response;
+            }
+            using (var scope = new TransactionScope())
+            {
+                var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == "BOONRAWD_LOCAL\\ds01").FirstOrDefault();
                 var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
                 ca.Cano = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
                 ca.Status = ConstantValue.TransStatusSaved;
@@ -132,7 +164,7 @@ namespace DS.Bll
                 result.ModelStateErrorList.Add(new ModelStateError
                 {
                     Key = property.Name,
-                    Message = ConstantValue.PleaseFill + property.Name
+                    Message = AppText.PleaseFill + property.Name
                 });
             }
 

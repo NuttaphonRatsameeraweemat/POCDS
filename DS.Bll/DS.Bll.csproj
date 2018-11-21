@@ -13,4 +13,19 @@
     <ProjectReference Include="..\DS.Helper\DS.Helper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Context\AppText.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppText.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Context\AppText.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppText.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

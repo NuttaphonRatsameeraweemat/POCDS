@@ -46,6 +46,7 @@ namespace DS.Extensions
             services.AddScoped<IBusinessPlace, BusinessPlace>();
             services.AddScoped<ICompany, Company>();
             services.AddScoped<IEmployee, Employee>();
+            services.AddScoped<IMenu, Menu>();
         }
 
         /// <summary>

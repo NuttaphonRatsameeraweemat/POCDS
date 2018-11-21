@@ -1,4 +1,5 @@
-﻿using DS.Helper.Interfaces;
+﻿using DS.Bll.Models;
+using DS.Helper.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
@@ -93,7 +94,8 @@ namespace DS
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
 
-            var model = new { httpContext.Response.StatusCode, Message = "Internal Server Error." };
+            //var model = new { httpContext.Response.StatusCode, exception.Message };
+            var model = new ValidationResultViewModel { ErrorFlag = true, Message = exception.Message };
 
             string json = JsonConvert.SerializeObject(model, new JsonSerializerSettings
             {
