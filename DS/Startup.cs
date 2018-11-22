@@ -28,6 +28,7 @@ namespace DS
             services.ConfigureLoggerService();
             services.ConfigureCors();
             services.ConfigureElasticSearch();
+            services.ConfigureJwtAuthen(Configuration);
 
             services.AddAutoMapper();
             services.AddMvc();
@@ -38,6 +39,8 @@ namespace DS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseAuthentication();
+
             app.ConfigureMiddleware();
 
             app.ConfigureSwagger();
