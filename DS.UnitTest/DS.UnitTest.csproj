@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="Moq" Version="4.10.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
@@ -16,6 +17,7 @@
     <ProjectReference Include="..\DS.Bll\DS.Bll.csproj" />
     <ProjectReference Include="..\DS.Data\DS.Data.csproj" />
     <ProjectReference Include="..\DS.Helper\DS.Helper.csproj" />
+    <ProjectReference Include="..\DS\DS.csproj" />
   </ItemGroup>
 
 </Project>

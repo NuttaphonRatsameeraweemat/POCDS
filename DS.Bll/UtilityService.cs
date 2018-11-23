@@ -51,7 +51,6 @@ namespace DS.Bll
         /// <returns></returns>
         public IEnumerable<ValueHelpViewModel> GetValueHelp(string valueType)
         {
-            _unitOfWork.GetRepository<ValueHelp>().GetMaxLength();
             return _mapper.Map<IEnumerable<ValueHelp>,
                 IEnumerable<ValueHelpViewModel>>(
                 _unitOfWork.GetRepository<ValueHelp>().GetCache(x => x.ValueType == valueType, x => x.OrderBy(y => y.Sequence))
@@ -73,7 +72,7 @@ namespace DS.Bll
                 var propertyInfoViewModel = validator.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyInfoModel.Name);
                 if (propertyInfoViewModel == null) continue;
                 int target = propertyInfoViewModel.GetValue(validator) != null ? propertyInfoViewModel.GetValue(validator).ToString().Length : 0;
-                var length = typeof(T).GetProperty("ObjectiveDesc").GetCustomAttributes(typeof(StringLengthAttribute), false).Cast<StringLengthAttribute>().SingleOrDefault();
+                var length = typeof(T).GetProperty(propertyInfoModel.Name).GetCustomAttributes(typeof(StringLengthAttribute), false).Cast<StringLengthAttribute>().SingleOrDefault();
                 if (length != null && target > length.MaximumLength)
                 {
                     var error = new ModelStateError();

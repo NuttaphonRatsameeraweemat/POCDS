@@ -26,8 +26,6 @@ namespace DS.Data.Repository.Interfaces
 
         int GetCount(Expression<Func<TEntity, bool>> filter = null);
 
-        void GetMaxLength();
-
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);
         void Update(TEntity entity);

@@ -89,15 +89,6 @@ namespace DS.Data.Repository.EF
             return GetQueryable(filter, orderBy, includeProperties).FromCache(typeof(TEntity).Name).ToList();
         }
 
-        public void GetMaxLength()
-        {
-            var test = _context.Model.FindEntityType(typeof(TEntity).Name);
-            foreach (var item in test.GetProperties())
-            {
-                var columnType = item.Relational().ColumnType;
-            }
-        }
-
         /// <summary>
         /// Gets poco entity representing data in database by using primary key.
         /// </summary>

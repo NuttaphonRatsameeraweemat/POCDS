@@ -132,13 +132,10 @@ namespace DS.Bll
             {
                 var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == "BOONRAWD_LOCAL\\ds01").FirstOrDefault();
                 var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
-                ca.Cano = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
                 ca.Status = ConstantValue.TransStatusSaved;
-                ca.CreateBy = emp.EmpNo;
-                ca.CreateOrg = emp.OrgId;
-                ca.CreatePos = emp.PositionId;
-                ca.CreateDate = DateTime.Now;
-                _unitOfWork.GetRepository<DS.Data.Pocos.Ca>().Add(ca);
+                ca.LastModifyBy = emp.EmpNo;
+                ca.LastModifyDate = DateTime.Now;
+                _unitOfWork.GetRepository<DS.Data.Pocos.Ca>().Update(ca);
                 _unitOfWork.Complete();
 
                 //Attachment file
