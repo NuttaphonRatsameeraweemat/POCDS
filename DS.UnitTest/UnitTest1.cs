@@ -46,7 +46,7 @@ namespace DS.UnitTest
 
             _unitOfWork.Setup(repo => repo.GetRepository<Ca>().GetById(caModel.Id)).Returns(caModel);
 
-            var service = new DS.Bll.Ca(_unitOfWork.Object, _mapper, _attachment.Object, _utility.Object, _elastic.Object);
+            var service = new DS.Bll.CaBll(_unitOfWork.Object, _mapper, _attachment.Object, _utility.Object, _elastic.Object);
 
             var result = service.Get(9999999);
 

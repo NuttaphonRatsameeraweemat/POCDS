@@ -1,4 +1,5 @@
-﻿using DS.Bll.Interfaces;
+﻿using DS.Bll.Context;
+using DS.Bll.Interfaces;
 using DS.Bll.Models;
 using DS.Data.Repository.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +12,7 @@ using System.Text;
 
 namespace DS.Bll
 {
-    public class Login : ILogin
+    public class LoginBll : ILogin
     {
 
         #region [Fields]
@@ -26,16 +27,21 @@ namespace DS.Bll
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// The Claims Identity payload token.
+        /// </summary>
+        private ClaimsIdentity _identity;
+
         #endregion
 
         #region [Constructors]
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Login" /> class.
+        /// Initializes a new instance of the <see cref="LoginBll" /> class.
         /// </summary>
         /// <param name="config">The config value.</param>
         /// <param name="unitOfWork">The utilities unit of work.</param>
-        public Login(IConfiguration config, IUnitOfWork unitOfWork)
+        public LoginBll(IConfiguration config, IUnitOfWork unitOfWork)
         {
             _config = config;
             _unitOfWork = unitOfWork;
@@ -56,6 +62,11 @@ namespace DS.Bll
             if (login.Username == _config["Authen:Username"] && login.Password == _config["Authen:Password"])
             {
                 result = true;
+                _identity = new ClaimsIdentity();
+                _identity.AddClaim(new Claim(ClaimTypes.Name, $"BOONRAWD_LOCAL\\{login.Username}"));
+                _identity.AddClaim(new Claim(ConstantValue.CLAMIS_ORG, "10001416"));
+                _identity.AddClaim(new Claim(ConstantValue.CLAMIS_POS, "20000641"));
+                _identity.AddClaim(new Claim(ConstantValue.CLAMIS_EMPNO, "001754"));
             }
             return result;
         }
@@ -69,14 +80,12 @@ namespace DS.Bll
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var identity = new ClaimsIdentity();
-            identity.AddClaim(new Claim(ClaimTypes.Name, username));
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
               expires: DateTime.Now.AddMinutes(360),
               signingCredentials: creds,
-              claims: identity.Claims);
+              claims: _identity.Claims);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

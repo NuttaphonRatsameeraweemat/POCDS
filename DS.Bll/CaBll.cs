@@ -14,7 +14,7 @@ using Nest;
 
 namespace DS.Bll
 {
-    public class Ca : ICa
+    public class CaBll : ICa
     {
 
         #region [Fields]
@@ -35,9 +35,9 @@ namespace DS.Bll
         private readonly IAttachment _attachmemt;
 
         /// <summary>
-        /// The Utility function.
+        /// The manage payload on token.
         /// </summary>
-        private readonly IUtilityService _utility;
+        private readonly IManageToken _manageToken;
 
         /// <summary>
         /// The elastic search function.
@@ -49,23 +49,23 @@ namespace DS.Bll
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Ca" /> class.
+        /// Initializes a new instance of the <see cref="CaBll" /> class.
         /// </summary>
         /// <param name="unitOfWork">The utilities unit of work.</param>
         /// <param name="mapper">The auto mapper.</param>
         /// <param name="attachmemt">The attachment file function.</param>
-        /// <param name="utility">The utility function.</param>
+        /// <param name="manageToken">The manage token payload value.</param>
         /// <param name="elastic">The elastic search function.</param>
-        public Ca(IUnitOfWork unitOfWork,
+        public CaBll(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IAttachment attachmemt,
-            IUtilityService utility,
+            IAttachment attachmemt, 
+            IManageToken manageToken,
             IElasticSearch<CaSearchViewModel> elastic)
         {
             _unitOfWork = unitOfWork;
             _attachmemt = attachmemt;
             _mapper = mapper;
-            _utility = utility;
+            _manageToken = manageToken;
             _elastic = elastic;
         }
 
@@ -97,13 +97,12 @@ namespace DS.Bll
             }
             using (var scope = new TransactionScope())
             {
-                var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == "BOONRAWD_LOCAL\\ds01").FirstOrDefault();
                 var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
                 ca.Cano = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
                 ca.Status = ConstantValue.TransStatusSaved;
-                ca.CreateBy = emp.EmpNo;
-                ca.CreateOrg = emp.OrgId;
-                ca.CreatePos = emp.PositionId;
+                ca.CreateBy = _manageToken.EmpNo;
+                ca.CreateOrg = _manageToken.Org;
+                ca.CreatePos = _manageToken.Position;
                 ca.CreateDate = DateTime.Now;
                 _unitOfWork.GetRepository<DS.Data.Pocos.Ca>().Add(ca);
                 _unitOfWork.Complete();
@@ -130,10 +129,9 @@ namespace DS.Bll
             }
             using (var scope = new TransactionScope())
             {
-                var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == "BOONRAWD_LOCAL\\ds01").FirstOrDefault();
                 var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
                 ca.Status = ConstantValue.TransStatusSaved;
-                ca.LastModifyBy = emp.EmpNo;
+                ca.LastModifyBy = _manageToken.EmpNo;
                 ca.LastModifyDate = DateTime.Now;
                 _unitOfWork.GetRepository<DS.Data.Pocos.Ca>().Update(ca);
                 _unitOfWork.Complete();
@@ -153,7 +151,7 @@ namespace DS.Bll
         /// <returns></returns>
         private ValidationResultViewModel ValidateData(CaViewModel model)
         {
-            var result = _utility.ValidateStringLength<DS.Data.Pocos.Ca, CaViewModel>(model);
+            var result = UtilityService.ValidateStringLength<DS.Data.Pocos.Ca, CaViewModel>(model);
 
             if (string.IsNullOrWhiteSpace(model.RequestFor))
             {
@@ -198,11 +196,11 @@ namespace DS.Bll
                                                                        .Take(1000)
                                                                        .Query(q =>
                                                                                     //Filter
-                                                                                    //  (q.Terms(t => t.Field(f => f.CreateBy).Terms(users)) ||
-                                                                                    //   q.Terms(t => t.Field(f => f.RequestFor).Terms(users)) ||
-                                                                                    //   q.Terms(t => t.Field(f => f.RequestOrg).Terms(orgs)) ||
-                                                                                    //   q.Terms(t => t.Field(f => f.CreateOrg).Terms(orgs)))
-                                                                                    //&&
+                                                                                      (q.Terms(t => t.Field(f => f.CreateBy).Terms(_manageToken.EmpNo)) ||
+                                                                                       q.Terms(t => t.Field(f => f.RequestFor).Terms(_manageToken.EmpNo)) ||
+                                                                                       q.Terms(t => t.Field(f => f.RequestOrg).Terms(_manageToken.Org)) ||
+                                                                                       q.Terms(t => t.Field(f => f.CreateOrg).Terms(_manageToken.Org)))
+                                                                                    &&
                                                                                     //Search All Field
                                                                                     q.MultiMatch(mm => mm
                                                                                             .Query(search)

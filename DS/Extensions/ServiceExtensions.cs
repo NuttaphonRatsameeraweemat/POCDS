@@ -41,14 +41,15 @@ namespace DS.Extensions
         /// <param name="services">The service collection.</param>
         public static void ConfigureBll(this IServiceCollection services)
         {
-            services.AddScoped<IUtilityService, UtilityService>();
-            services.AddScoped<IAttachment, Attachment>();
-            services.AddScoped<ICa, Ca>();
-            services.AddScoped<IBusinessPlace, BusinessPlace>();
-            services.AddScoped<ICompany, Company>();
-            services.AddScoped<IEmployee, Employee>();
-            services.AddScoped<IMenu, Menu>();
-            services.AddScoped<ILogin, Login>();
+            services.AddScoped<IValueHelp, ValueHelpBll>();
+            services.AddScoped<IAttachment, AttachmentBll>();
+            services.AddScoped<ICa, CaBll>();
+            services.AddScoped<IManageToken, ManageToken>();
+            services.AddScoped<IBusinessPlace, BusinessPlaceBll>();
+            services.AddScoped<ICompany, CompanyBll>();
+            services.AddScoped<IEmployee, EmployeeBll>();
+            services.AddScoped<IMenu, MenuBll>();
+            services.AddScoped<ILogin, LoginBll>();
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ using System.Text;
 
 namespace DS.Bll
 {
-    public class Menu : IMenu
+    public class MenuBll : IMenu
     {
 
         #region Fields
@@ -26,10 +26,10 @@ namespace DS.Bll
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Menu" /> class.
+        /// Initializes a new instance of the <see cref="MenuBll" /> class.
         /// </summary>
         /// <param name="unitOfWork">The utilities unit of work.</param>
-        public Menu(IUnitOfWork unitOfWork)
+        public MenuBll(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

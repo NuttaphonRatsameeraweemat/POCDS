@@ -15,7 +15,7 @@ using System.Transactions;
 
 namespace DS.Bll
 {
-    public class Attachment : IAttachment
+    public class AttachmentBll : IAttachment
     {
 
         #region [Fields]
@@ -26,37 +26,30 @@ namespace DS.Bll
         private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
-        /// The auto mapper.
-        /// </summary>
-        private readonly IMapper _mapper;
-
-        /// <summary>
         /// The Configuration Value.
         /// </summary>
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// The httpcontext.
+        /// The manage payload on token.
         /// </summary>
-        private readonly HttpContext _httpContext;
+        private readonly IManageToken _manageToken;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Attachment" /> class.
+        /// Initializes a new instance of the <see cref="AttachmentBll" /> class.
         /// </summary>
         /// <param name="unitOfWork">The utilities unit of work.</param>
-        /// <param name="mapper">The auto mapper.</param>
-        /// <param name="log">The Log Manager.</param>
-        /// <param name="configuration">The Configuration Value</param>
-        public Attachment(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        /// <param name="configuration">The configuration value.</param>
+        /// <param name="manageToken">The manage token payload value.</param>
+        public AttachmentBll(IUnitOfWork unitOfWork, IConfiguration configuration, IManageToken manageToken)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _configuration = configuration;
-            _httpContext = httpContextAccessor.HttpContext;
+            _manageToken = manageToken;
         }
 
         #endregion
@@ -100,7 +93,10 @@ namespace DS.Bll
                 var attach = _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().GetById(item.ID);
                 if (File.Exists(Path.Combine(documentPath,attach.SavedFileName)))
                 {
+                    //Remove file in local storage.
                     File.Delete(Path.Combine(documentPath, attach.SavedFileName));
+                    //Remove Row in database.
+                    _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().Remove(attach);
                 }
             }
             return result;
@@ -121,7 +117,7 @@ namespace DS.Bll
                 var uniqueKey = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
                 var attachment = new DS.Data.Pocos.Attachment
                 {
-                    AttachBy = _httpContext.User.Identity.Name ?? null,
+                    AttachBy = _manageToken.EmpNo,
                     AttachDate = attachDate,
                     DataKey = dataId.ToString(),
                     FileExtension = Path.GetExtension(item.FileName),

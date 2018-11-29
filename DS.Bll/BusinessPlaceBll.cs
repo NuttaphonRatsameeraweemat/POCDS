@@ -10,7 +10,7 @@ using System.Text;
 
 namespace DS.Bll
 {
-    public class BusinessPlace : IBusinessPlace
+    public class BusinessPlaceBll : IBusinessPlace
     {
 
         #region [Fields]
@@ -30,11 +30,11 @@ namespace DS.Bll
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BusinessPlace" /> class.
+        /// Initializes a new instance of the <see cref="BusinessPlaceBll" /> class.
         /// </summary>
         /// <param name="unitOfWork">The utilities unit of work.</param>
         /// <param name="mapper">The auto mapper.</param>
-        public BusinessPlace(IUnitOfWork unitOfWork, IMapper mapper)
+        public BusinessPlaceBll(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

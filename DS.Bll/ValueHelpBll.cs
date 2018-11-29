@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DS.Bll.Context;
 using DS.Bll.Interfaces;
 using DS.Bll.Models;
 using DS.Data.Pocos;
@@ -11,7 +10,7 @@ using System.Text;
 
 namespace DS.Bll
 {
-    public class Employee : IEmployee
+    public class ValueHelpBll : IValueHelp
     {
 
         #region [Fields]
@@ -31,11 +30,11 @@ namespace DS.Bll
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Employee" /> class.
+        /// Initializes a new instance of the <see cref="ValueHelpBll" /> class.
         /// </summary>
         /// <param name="unitOfWork">The utilities unit of work.</param>
         /// <param name="mapper">The auto mapper.</param>
-        public Employee(IUnitOfWork unitOfWork, IMapper mapper)
+        public ValueHelpBll(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -46,26 +45,19 @@ namespace DS.Bll
         #region [Methods]
 
         /// <summary>
-        /// Get employee list.
+        /// Get List ValueHelp.
         /// </summary>
+        /// <param name="valueType">The value type value.</param>
         /// <returns></returns>
-        public IEnumerable<ValueHelpViewModel> GetEmployee()
+        public IEnumerable<ValueHelpViewModel> GetValueHelp(string valueType)
         {
-            var result = new List<ValueHelpViewModel>();
-            var empList = _unitOfWork.GetRepository<Hremployee>().GetCache();
-            foreach (var item in empList)
-            {
-                result.Add(new ValueHelpViewModel
-                {
-                    ValueKey = item.EmpNo,
-                    ValueText = string.Format(ConstantValue.EmployeeTemplate, item.FirstnameTh, item.LastnameTh)
-                });
-            }
-            return result;
+            return _mapper.Map<IEnumerable<ValueHelp>,
+                IEnumerable<ValueHelpViewModel>>(
+                _unitOfWork.GetRepository<ValueHelp>().GetCache(x => x.ValueType == valueType, x => x.OrderBy(y => y.Sequence))
+                );
         }
 
         #endregion
-
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DS.Bll.Context;
 using DS.Bll.Interfaces;
 using DS.Bll.Models;
 using DS.Data.Pocos;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace DS.Bll
 {
-    public class Company : ICompany
+    public class EmployeeBll : IEmployee
     {
 
         #region [Fields]
@@ -30,11 +31,11 @@ namespace DS.Bll
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Ca" /> class.
+        /// Initializes a new instance of the <see cref="EmployeeBll" /> class.
         /// </summary>
         /// <param name="unitOfWork">The utilities unit of work.</param>
         /// <param name="mapper">The auto mapper.</param>
-        public Company(IUnitOfWork unitOfWork, IMapper mapper)
+        public EmployeeBll(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -45,28 +46,26 @@ namespace DS.Bll
         #region [Methods]
 
         /// <summary>
-        /// Get company list by employeeNo.
+        /// Get employee list.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ValueHelpViewModel> GetCompanyByEmp(string empNo)
+        public IEnumerable<ValueHelpViewModel> GetEmployee()
         {
             var result = new List<ValueHelpViewModel>();
-            var comList = _unitOfWork.GetRepository<Hrcompany>().GetCache();
-            var empList = _unitOfWork.GetRepository<Hremployee>().GetCache().ToList();
-            var employee = empList.FirstOrDefault(x => x.EmpNo == empNo)?.Aduser;
-            var empAd = empList.Where(x => x.Aduser == employee).ToList();
-            foreach (var item in empAd)
+            var empList = _unitOfWork.GetRepository<Hremployee>().GetCache();
+            foreach (var item in empList)
             {
-                var temp = comList.FirstOrDefault(x => x.ComCode == item.ComCode);
-                if (temp != null)
+                result.Add(new ValueHelpViewModel
                 {
-                    result.Add(new ValueHelpViewModel { ValueKey = temp.ComCode, ValueText = temp.LongText });
-                }
+                    ValueKey = item.EmpNo,
+                    ValueText = string.Format(ConstantValue.EmployeeTemplate, item.FirstnameTh, item.LastnameTh)
+                });
             }
             return result;
         }
 
         #endregion
+
 
     }
 }

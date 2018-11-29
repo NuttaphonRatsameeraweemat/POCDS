@@ -11,51 +11,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DS.Bll
 {
-    public class UtilityService : IUtilityService
+    public class UtilityService
     {
-        #region [Fields]
-
-        /// <summary>
-        /// The utilities unit of work for manipulating utilities data in database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// The auto mapper.
-        /// </summary>
-        private readonly IMapper _mapper;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UtilityService" /> class.
-        /// </summary>
-        /// <param name="unitOfWork">The utilities unit of work.</param>
-        /// <param name="mapper">The auto mapper.</param>
-        public UtilityService(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
-
-        #endregion
 
         #region [Methods]
-
-        /// <summary>
-        /// Get List ValueHelp.
-        /// </summary>
-        /// <param name="valueType">The value type value.</param>
-        /// <returns></returns>
-        public IEnumerable<ValueHelpViewModel> GetValueHelp(string valueType)
-        {
-            return _mapper.Map<IEnumerable<ValueHelp>,
-                IEnumerable<ValueHelpViewModel>>(
-                _unitOfWork.GetRepository<ValueHelp>().GetCache(x => x.ValueType == valueType, x => x.OrderBy(y => y.Sequence))
-                );
-        }
 
         /// <summary>
         /// Validate min and max all property between entity and viewmodel.
@@ -64,7 +23,7 @@ namespace DS.Bll
         /// <typeparam name="TT">The view model type.</typeparam>
         /// <param name="validator"></param>
         /// <returns></returns>
-        public ValidationResultViewModel ValidateStringLength<T, TT>(TT validator)
+        public static ValidationResultViewModel ValidateStringLength<T, TT>(TT validator)
         {
             var result = new ValidationResultViewModel();
             foreach (var propertyInfoModel in typeof(T).GetProperties().Where(m => m.PropertyType.FullName == "System.String"))

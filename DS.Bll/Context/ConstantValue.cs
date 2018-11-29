@@ -9,7 +9,12 @@ namespace DS.Bll.Context
         //Template format.
         public const string EmployeeTemplate = "คุณ{0} {1}";
         public const string DateTimeFormat = "yyyyMMddHHmmssfff";
-       
+
+        //Claims Type
+        public const string CLAMIS_ORG = "Org";
+        public const string CLAMIS_POS = "Pos";
+        public const string CLAMIS_EMPNO = "EmpNo";
+
         //Role and Menu.
         public const string RootMenuCode = "ROOT";
         public const string RoleEveryone = "Role_Everyone";

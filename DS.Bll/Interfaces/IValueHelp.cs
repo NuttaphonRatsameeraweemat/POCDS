@@ -5,9 +5,8 @@ using System.Text;
 
 namespace DS.Bll.Interfaces
 {
-    public interface IUtilityService
+    public interface IValueHelp
     {
         IEnumerable<ValueHelpViewModel> GetValueHelp(string valueType);
-        ValidationResultViewModel ValidateStringLength<T, TT>(TT validator);
     }
 }

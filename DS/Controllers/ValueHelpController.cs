@@ -18,7 +18,7 @@ namespace DS.Controllers
         /// <summary>
         /// The CA manager provides CA functionality.
         /// </summary>
-        private readonly IUtilityService _utility;
+        private readonly IValueHelp _valueHelp;
 
         /// <summary>
         /// The value type currency list.
@@ -42,10 +42,10 @@ namespace DS.Controllers
         /// <summary>
         ///  Initializes a new instance of the <see cref="ValueHelpController" /> class.
         /// </summary>
-        /// <param name="utility"></param>
-        public ValueHelpController(IUtilityService utility)
+        /// <param name="valueHelp"></param>
+        public ValueHelpController(IValueHelp valueHelp)
         {
-            _utility = utility;
+            _valueHelp = valueHelp;
         }
 
         #endregion
@@ -56,21 +56,21 @@ namespace DS.Controllers
         [Route("GetCurrency")]
         public IActionResult GetCurrency()
         {
-            return Ok(_utility.GetValueHelp(CURRENCY));
+            return Ok(_valueHelp.GetValueHelp(CURRENCY));
         }
 
         [HttpGet]
         [Route("GetReceiveType")]
         public IActionResult GetReceiveType()
         {
-            return Ok(_utility.GetValueHelp(RECEIVETYPE));
+            return Ok(_valueHelp.GetValueHelp(RECEIVETYPE));
         }
 
         [HttpGet]
         [Route("GetPaymentPlace")]
         public IActionResult GetPaymentPlace()
         {
-            return Ok(_utility.GetValueHelp(PAYMENTPLACE));
+            return Ok(_valueHelp.GetValueHelp(PAYMENTPLACE));
         }
 
         #endregion
