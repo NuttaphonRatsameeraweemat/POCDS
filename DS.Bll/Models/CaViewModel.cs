@@ -11,6 +11,7 @@ namespace DS.Bll.Models
         public int Id { get; set; }
         public string CANo { get; set; }
         public DateTime? CADate { get; set; }
+        public string ComCode { get; set; }
         public string FundSAP { get; set; }
         public string IOSAP { get; set; }
         public string CostCenter { get; set; }
@@ -37,10 +38,8 @@ namespace DS.Bll.Models
         public string SAPMessage { get; set; }
         public string OrgName { get; set; }
         public string CreateBy { get; set; }
-        public string CreateByText { get; set; }
         public string ReceiveType { get; set; }
         public string ReceiveRemark { get; set; }
-        public string StatusText { get; set; }
         //Attachment List
         public List<AttachmentViewModel> AttachmentList { get; set; }
     }

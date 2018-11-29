@@ -58,7 +58,7 @@ namespace DS.Bll
         /// <param name="elastic">The elastic search function.</param>
         public CaBll(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IAttachment attachmemt, 
+            IAttachment attachmemt,
             IManageToken manageToken,
             IElasticSearch<CaSearchViewModel> elastic)
         {
@@ -98,7 +98,7 @@ namespace DS.Bll
             using (var scope = new TransactionScope())
             {
                 var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
-                ca.Cano = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
+                ca.Cano = DateTime.Now.ToString(ConstantValue.DATETIME_YEARMONTHDAYTIME);
                 ca.Status = ConstantValue.TransStatusSaved;
                 ca.CreateBy = _manageToken.EmpNo;
                 ca.CreateOrg = _manageToken.Org;
@@ -109,6 +109,9 @@ namespace DS.Bll
 
                 //Attachment file
                 _attachmemt.UploadFile(model.AttachmentList, ca.Id, CaViewModel.ProcessCode, ca.Cano);
+
+                _elastic.Insert(this.InitialCAListViewModel(ca), ConstantValue.CAIndex, ConstantValue.CAType);
+
                 scope.Complete();
             }
 
@@ -138,6 +141,9 @@ namespace DS.Bll
 
                 //Attachment file
                 _attachmemt.UploadFile(model.AttachmentList, ca.Id, CaViewModel.ProcessCode, ca.Cano);
+
+                _elastic.Update(this.InitialCAListViewModel(ca), ConstantValue.CAIndex, ConstantValue.CAType);
+
                 scope.Complete();
             }
 
@@ -166,6 +172,7 @@ namespace DS.Bll
             if (result.ModelStateErrorList.Count > 0)
             {
                 result.ErrorFlag = true;
+                result.Message = "Error";
             }
 
             return result;
@@ -195,7 +202,7 @@ namespace DS.Bll
                                                                        .From(0)
                                                                        .Take(1000)
                                                                        .Query(q =>
-                                                                                    //Filter
+                                                                                      //Filter
                                                                                       (q.Terms(t => t.Field(f => f.CreateBy).Terms(_manageToken.EmpNo)) ||
                                                                                        q.Terms(t => t.Field(f => f.RequestFor).Terms(_manageToken.EmpNo)) ||
                                                                                        q.Terms(t => t.Field(f => f.RequestOrg).Terms(_manageToken.Org)) ||
@@ -229,6 +236,123 @@ namespace DS.Bll
                                                                                             ))
                                                                        .Sort(m => m.Descending(f => f.ID));
             return searchFunc;
+        }
+
+        /// <summary>
+        /// Initial Ca Model to Ca Search Model.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private CaSearchViewModel InitialCAListViewModel(Ca model)
+        {
+            var status = _unitOfWork.GetRepository<ValueHelp>().GetCache(x => x.ValueType == ConstantValue.VALUE_HELP_STATUS &&
+                                                                              x.ValueKey == model.Status).FirstOrDefault();
+
+            var result = new CaSearchViewModel
+            {
+                ID = model.Id,
+                CANo = UtilityService.DataOrDefault(model.Cano),
+                ComCode = model.ComCode,
+                FundIOSAP = UtilityService.DataOrDefault(model.FundSap),
+                Amount = model.Amount.HasValue ? model.Amount.Value.ToString("0.##") : string.Empty,
+                AmountText = UtilityService.DataOrDefault(model.Amount),
+                DueDate = UtilityService.DataOrDefault(model.DueDate, ConstantValue.DATETIME_DAYMONTHYEAR),
+                DueDateText = UtilityService.DataOrDefault(model.DueDate, ConstantValue.DATETIME_DAYMONTHTEXTYEAR),
+                DueDateSort = model.DueDate,
+                RequireDate = UtilityService.DataOrDefault(model.RequireDate, ConstantValue.DATETIME_DAYMONTHYEAR),
+                RequireDateText = UtilityService.DataOrDefault(model.RequireDate, ConstantValue.DATETIME_DAYMONTHTEXTYEAR),
+                RequireDateSort = model.RequireDate,
+                Status = model.Status,
+                StatusText = status.ValueText,
+                ReceiveDate = UtilityService.DataOrDefault(model.ReceiveDate, ConstantValue.DATETIME_DAYMONTHYEAR),
+                ReceiveDateText = UtilityService.DataOrDefault(model.ReceiveDate, ConstantValue.DATETIME_DAYMONTHTEXTYEAR),
+                ReceiveDateSort = model.ReceiveDate,
+                RequestFor = model.RequestFor,
+                RequestPos = model.RequestPos,
+                RequestOrg = model.RequestOrg,
+                CreateBy = model.CreateBy,
+                CreatePos = model.CreatePos,
+                CreateOrg = model.CreateOrg,
+                //CreateByText = HRService.GetEmployee(item.RequestFor)
+            };
+
+            result = this.InitialApprove(result, model);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Initial approve to elastic search model.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private CaSearchViewModel InitialApprove(CaSearchViewModel result, Ca item)
+        {
+            var workflowLog = new List<WorkflowActivityLog>();
+            var process = _unitOfWork.GetRepository<WorkflowProcessInstance>().Get(x => x.DataId == item.Id && 
+                                                                                        x.ProcessCode == CaViewModel.ProcessCode).FirstOrDefault();
+            if (process != null)
+            {
+                workflowLog = _unitOfWork.GetRepository<WorkflowActivityLog>().Get(x => x.ProcessInstanceId == process.ProcessInstanceId).ToList();
+            }
+            workflowLog = workflowLog.Where(x => x.Step > 1).ToList();
+            foreach (var workItem in workflowLog)
+            {
+                result = SetApproveElastic(result, workItem);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Set property approve elastic search.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="workItem"></param>
+        /// <returns></returns>
+        private CaSearchViewModel SetApproveElastic(CaSearchViewModel result, WorkflowActivityLog workItem)
+        {
+            if (string.IsNullOrEmpty(result.Approver01))
+            {
+                result.Approver01 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver02))
+            {
+                result.Approver02 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver03))
+            {
+                result.Approver03 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver04))
+            {
+                result.Approver04 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver05))
+            {
+                result.Approver05 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver06))
+            {
+                result.Approver06 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver07))
+            {
+                result.Approver07 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver08))
+            {
+                result.Approver08 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver09))
+            {
+                result.Approver09 = workItem.ActionUser;
+            }
+            else if (string.IsNullOrEmpty(result.Approver10))
+            {
+                result.Approver10 = workItem.ActionUser;
+            }
+            return result;
         }
 
         #endregion

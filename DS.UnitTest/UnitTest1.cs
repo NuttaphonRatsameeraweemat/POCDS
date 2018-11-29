@@ -19,7 +19,7 @@ namespace DS.UnitTest
 
         private readonly IMapper _mapper;
 
-        private readonly Mock<IUtilityService> _utility;
+        private readonly Mock<IManageToken> _manageToken;
 
         private readonly Mock<IAttachment> _attachment;
 
@@ -29,8 +29,8 @@ namespace DS.UnitTest
         {
             _unitOfWork = new Mock<IUnitOfWork>();
             _mapper = new Mapper(new MapperConfiguration(c => c.AddProfile<MappingProfile>()));
-            _utility = new Mock<IUtilityService>();
             _attachment = new Mock<IAttachment>();
+            _manageToken = new Mock<IManageToken>();
             _elastic = new Mock<IElasticSearch<CaSearchViewModel>>();
         }
 
@@ -46,7 +46,7 @@ namespace DS.UnitTest
 
             _unitOfWork.Setup(repo => repo.GetRepository<Ca>().GetById(caModel.Id)).Returns(caModel);
 
-            var service = new DS.Bll.CaBll(_unitOfWork.Object, _mapper, _attachment.Object, _utility.Object, _elastic.Object);
+            var service = new DS.Bll.CaBll(_unitOfWork.Object, _mapper, _attachment.Object, _manageToken.Object, _elastic.Object);
 
             var result = service.Get(9999999);
 

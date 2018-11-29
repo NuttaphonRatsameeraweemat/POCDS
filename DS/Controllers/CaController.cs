@@ -55,7 +55,12 @@ namespace DS.Controllers
         [Route("Edit")]
         public IActionResult Edit([FromBody]CaViewModel model)
         {
-            return Ok();
+            var response = _ca.Edit(model);
+            if (response.ErrorFlag)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
         }
 
         [HttpGet("{id}")]

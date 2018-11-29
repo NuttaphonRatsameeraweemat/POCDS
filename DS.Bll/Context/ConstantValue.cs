@@ -8,12 +8,19 @@ namespace DS.Bll.Context
     {
         //Template format.
         public const string EmployeeTemplate = "คุณ{0} {1}";
-        public const string DateTimeFormat = "yyyyMMddHHmmssfff";
+
+        //Datetime Format
+        public const string DATETIME_YEARMONTHDAYTIME = "yyyyMMddHHmmss";
+        public const string DATETIME_DAYMONTHYEAR = "dd/MM/yyyy";
+        public const string DATETIME_DAYMONTHTEXTYEAR = "dd MMM yyyy";
 
         //Claims Type
         public const string CLAMIS_ORG = "Org";
         public const string CLAMIS_POS = "Pos";
         public const string CLAMIS_EMPNO = "EmpNo";
+
+        //ValueHelp Where Clause.
+        public const string VALUE_HELP_STATUS = "TRANSSTATUS";
 
         //Role and Menu.
         public const string RootMenuCode = "ROOT";

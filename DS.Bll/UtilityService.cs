@@ -37,11 +37,53 @@ namespace DS.Bll
                     var error = new ModelStateError();
                     result.ErrorFlag = true;
                     error.Key = propertyInfoModel.Name;
-                    error.Message = string.Format("{0} ความยาวเกินกำหนด (ไม่เกิน {1} ตัวอักษร)", propertyInfoModel.Name, length.ToString());
+                    error.Message = string.Format("{0} ความยาวเกินกำหนด (ไม่เกิน {1} ตัวอักษร)", propertyInfoModel.Name, length.MaximumLength);
                     result.ModelStateErrorList.Add(error);
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Validate string is null or empty.
+        /// </summary>
+        /// <param name="value">The string value</param>
+        /// <returns>string empty if value is null</returns>
+        public static string DataOrDefault(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
+            else return value;
+        }
+
+        /// <summary>
+        /// Validate decimal is null.
+        /// </summary>
+        /// <param name="value">The string value</param>
+        /// <returns>string empty if value is null</returns>
+        public static string DataOrDefault(decimal? value)
+        {
+            if (!value.HasValue)
+            {
+                return string.Empty;
+            }
+            else return string.Format("{0:n}", value);
+        }
+
+        /// <summary>
+        /// Validate datetime is null.
+        /// </summary>
+        /// <param name="value">The string value</param>
+        /// <returns>string empty if value is null</returns>
+        public static string DataOrDefault(DateTime? value, string format)
+        {
+            if (!value.HasValue)
+            {
+                return string.Empty;
+            }
+            else return value.Value.ToString(format);
         }
 
         #endregion

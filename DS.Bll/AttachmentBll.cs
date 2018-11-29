@@ -114,7 +114,7 @@ namespace DS.Bll
         {
             if (item.ID == 0)
             {
-                var uniqueKey = DateTime.Now.ToString(ConstantValue.DateTimeFormat);
+                var uniqueKey = DateTime.Now.ToString(ConstantValue.DATETIME_YEARMONTHDAYTIME);
                 var attachment = new DS.Data.Pocos.Attachment
                 {
                     AttachBy = _manageToken.EmpNo,
