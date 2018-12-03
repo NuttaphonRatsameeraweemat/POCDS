@@ -58,7 +58,7 @@ namespace DS.Bll
                 result.Add(new ValueHelpViewModel
                 {
                     ValueKey = item.EmpNo,
-                    ValueText = string.Format(ConstantValue.EmployeeTemplate, item.FirstnameTh, item.LastnameTh)
+                    ValueText = string.Format(ConstantValue.EMP_TEMPLATE, item.FirstnameTh, item.LastnameTh)
                 });
             }
             return result;

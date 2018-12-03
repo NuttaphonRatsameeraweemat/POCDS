@@ -186,7 +186,11 @@ namespace DS.Data.Repository.EF
         /// <param name="entity">The entity to update.</param>
         public void Update(TEntity entity)
         {
-            _dbSet.Update(entity);
+            var entry = _context.Entry(entity);
+            if (entry.State != EntityState.Detached)
+            {
+                _dbSet.Update(entity);
+            }
         }
 
         #endregion

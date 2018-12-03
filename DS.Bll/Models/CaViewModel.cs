@@ -36,8 +36,6 @@ namespace DS.Bll.Models
         public string RequestOrg { get; set; }
         public string RequestPos { get; set; }
         public string SAPMessage { get; set; }
-        public string OrgName { get; set; }
-        public string CreateBy { get; set; }
         public string ReceiveType { get; set; }
         public string ReceiveRemark { get; set; }
         //Attachment List

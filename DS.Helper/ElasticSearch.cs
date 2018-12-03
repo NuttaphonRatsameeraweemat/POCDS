@@ -80,7 +80,7 @@ namespace DS.Helper
             string result = string.Empty;
 
             var client = this.GetClient();
-            var id = Convert.ToInt32(model.GetType().GetProperty("Id").GetValue(model, null));
+            var id = Convert.ToInt32(model.GetType().GetProperty("ID").GetValue(model, null));
             var response = client.Index<T>(model, i => i.Index(index).Type(type).Id(id));
             if (!response.IsValid)
             {
@@ -102,7 +102,7 @@ namespace DS.Helper
             string result = string.Empty;
 
             var client = this.GetClient();
-            var id = Convert.ToInt32(model.GetType().GetProperty("Id").GetValue(model, null));
+            var id = Convert.ToInt32(model.GetType().GetProperty("ID").GetValue(model, null));
             var response = client.Update<T>(id, i => i.Index(index).Type(type).Doc(model).RetryOnConflict(10));
             if (!response.IsValid)
             {
@@ -193,11 +193,11 @@ namespace DS.Helper
 
                 foreach (var item in exportList)
                 {
-                    int id = Convert.ToInt32(item.GetType().GetProperty("Id").GetValue(item, null));
+                    int id = Convert.ToInt32(item.GetType().GetProperty("ID").GetValue(item, null));
                     bulkList.Add(new BulkCreateOperation<T>(item) { Id = id });
                 }
 
-                var response = client.Bulk(b => b.CreateMany(exportList, (bd, item) => bd.Index(index).Type(type).Document(item).Id(Convert.ToInt32(item.GetType().GetProperty("Id").GetValue(item, null)))));
+                var response = client.Bulk(b => b.CreateMany(exportList, (bd, item) => bd.Index(index).Type(type).Document(item).Id(Convert.ToInt32(item.GetType().GetProperty("ID").GetValue(item, null)))));
                 if (response.Errors)
                 {
                     result = result + response.ServerError.ToString() + " ,";

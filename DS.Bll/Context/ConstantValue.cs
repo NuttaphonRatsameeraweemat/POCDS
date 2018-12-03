@@ -7,7 +7,7 @@ namespace DS.Bll.Context
     public class ConstantValue
     {
         //Template format.
-        public const string EmployeeTemplate = "คุณ{0} {1}";
+        public const string EMP_TEMPLATE = "คุณ{0} {1}";
 
         //Datetime Format
         public const string DATETIME_YEARMONTHDAYTIME = "yyyyMMddHHmmss";

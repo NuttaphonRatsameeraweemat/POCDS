@@ -132,11 +132,17 @@ namespace DS.Bll
             }
             using (var scope = new TransactionScope())
             {
-                var ca = _mapper.Map<CaViewModel, DS.Data.Pocos.Ca>(model);
+                var ca = _unitOfWork.GetRepository<Ca>().GetById(model.Id);
+                var temp = new { createBy = ca.CreateBy, createDate = ca.CreateDate, createOrg = ca.CreateOrg, createPos = ca.CreatePos };
+                ca = _mapper.Map<CaViewModel, Ca>(model,ca);
                 ca.Status = ConstantValue.TransStatusSaved;
+                ca.CreateBy = temp.createBy;
+                ca.CreateDate = temp.createDate;
+                ca.CreateOrg = temp.createOrg;
+                ca.CreatePos = temp.createPos;
                 ca.LastModifyBy = _manageToken.EmpNo;
                 ca.LastModifyDate = DateTime.Now;
-                _unitOfWork.GetRepository<DS.Data.Pocos.Ca>().Update(ca);
+                _unitOfWork.GetRepository<Ca>().Update(ca);
                 _unitOfWork.Complete();
 
                 //Attachment file
@@ -273,7 +279,7 @@ namespace DS.Bll
                 CreateBy = model.CreateBy,
                 CreatePos = model.CreatePos,
                 CreateOrg = model.CreateOrg,
-                //CreateByText = HRService.GetEmployee(item.RequestFor)
+                CreateByText = this.GetCreateBy(model.RequestFor)
             };
 
             result = this.InitialApprove(result, model);
@@ -290,7 +296,7 @@ namespace DS.Bll
         private CaSearchViewModel InitialApprove(CaSearchViewModel result, Ca item)
         {
             var workflowLog = new List<WorkflowActivityLog>();
-            var process = _unitOfWork.GetRepository<WorkflowProcessInstance>().Get(x => x.DataId == item.Id && 
+            var process = _unitOfWork.GetRepository<WorkflowProcessInstance>().Get(x => x.DataId == item.Id &&
                                                                                         x.ProcessCode == CaViewModel.ProcessCode).FirstOrDefault();
             if (process != null)
             {
@@ -353,6 +359,17 @@ namespace DS.Bll
                 result.Approver10 = workItem.ActionUser;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Get createBy name with employee no.
+        /// </summary>
+        /// <param name="empNo">The identity employee.</param>
+        /// <returns></returns>
+        private string GetCreateBy(string empNo)
+        {
+            var emp = _unitOfWork.GetRepository<Hremployee>().GetCache(x => x.EmpNo == empNo).FirstOrDefault();
+            return string.Format(ConstantValue.EMP_TEMPLATE, emp.FirstnameTh, emp.LastnameTh);
         }
 
         #endregion

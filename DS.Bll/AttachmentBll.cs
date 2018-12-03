@@ -91,7 +91,7 @@ namespace DS.Bll
             {
                 result = true;
                 var attach = _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().GetById(item.ID);
-                if (File.Exists(Path.Combine(documentPath,attach.SavedFileName)))
+                if (attach != null && File.Exists(Path.Combine(documentPath,attach.SavedFileName)))
                 {
                     //Remove file in local storage.
                     File.Delete(Path.Combine(documentPath, attach.SavedFileName));
