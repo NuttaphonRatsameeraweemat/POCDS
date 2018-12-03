@@ -157,6 +157,29 @@ namespace DS.Bll
         }
 
         /// <summary>
+        /// Update Ca and upload file.
+        /// </summary>
+        /// <param name="model">The infomation ca.</param>
+        /// <returns></returns>
+        public ValidationResultViewModel Delete(int id, string documentNo)
+        {
+            var result = new ValidationResultViewModel();
+            using (var scope = new TransactionScope())
+            {
+                _unitOfWork.GetRepository<Ca>().Remove(id);
+                _unitOfWork.Complete();
+
+                //Attachment file
+                _attachmemt.RemoveFile(id, CaViewModel.ProcessCode, documentNo);
+
+                _elastic.Delete(id, ConstantValue.CAIndex, ConstantValue.CAType);
+
+                scope.Complete();
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Validate value of ca.
         /// </summary>
         /// <param name="model">The infomation ca.</param>

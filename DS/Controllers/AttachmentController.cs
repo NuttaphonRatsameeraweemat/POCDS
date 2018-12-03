@@ -33,18 +33,11 @@ namespace DS.Controllers
         #endregion
 
         #region [Methods]
-        
-        [HttpPost]
-        [Route("Upload")]
-        public IActionResult Upload([FromBody]List<AttachmentViewModel> model)
-        {
-            return Ok(_attachment.UploadFile(model, 999999, "Temp"));
-        }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id, string processCode)
         {
-            return Ok();
+            return Ok(_attachment.GetFile(id, processCode));
         }
 
         #endregion

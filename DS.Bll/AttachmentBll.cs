@@ -60,10 +60,12 @@ namespace DS.Bll
         /// Upload file to temp folder.
         /// </summary>
         /// <param name="model"></param>
+        /// <param name="dataId">The identity data id file.</param>
+        /// <param name="processCode">The process code.</param>
+        /// <param name="folder1">The subfolder.</param>
         /// <returns></returns>
-        public ValidationResultViewModel UploadFile(List<AttachmentViewModel> model, int dataId, string processCode, string folder1 = "")
+        public void UploadFile(List<AttachmentViewModel> model, int dataId, string processCode, string folder1 = "")
         {
-            var result = new ValidationResultViewModel();
             string documentPath = GetDocumentFilePath(processCode, folder1);
             var attachDate = DateTime.Now;
             this.CreateDirectory(processCode, folder1);
@@ -75,7 +77,47 @@ namespace DS.Bll
                 }
             }
             _unitOfWork.Complete();
+        }
+
+        /// <summary>
+        /// Get file list.
+        /// </summary>
+        /// <param name="dataId">The identity data id file.</param>
+        /// <param name="processCode">The process code.</param>
+        /// <returns></returns>
+        public List<AttachmentViewModel> GetFile(int dataId, string processCode)
+        {
+            List<AttachmentViewModel> result = new List<AttachmentViewModel>();
+
+            var attachList = _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().Get(x => x.DataKey == dataId.ToString()).ToList();
+
+            foreach (var item in attachList)
+            {
+                result.Add(new AttachmentViewModel { ID = item.Id, FileName = item.FileName, IsDelete = false });
+            } 
+
             return result;
+        }
+
+        /// <summary>
+        /// Remove all file with data id.
+        /// </summary>
+        /// <param name="dataId">The identity data id file</param>
+        /// <param name="processCode">The process code.</param>
+        /// <param name="folder1">The sub folder.</param>
+        public void RemoveFile(int dataId, string processCode, string folder1 = "")
+        {
+            string documentPath = GetDocumentFilePath(processCode, folder1);
+            var attachList = _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().Get(x => x.DataKey == dataId.ToString()).ToList();
+            if (Directory.Exists(documentPath))
+            {
+                Directory.Delete(documentPath, true);
+            }
+            if (attachList.Count > 0)
+            {
+                _unitOfWork.GetRepository<DS.Data.Pocos.Attachment>().RemoveRange(attachList);
+                _unitOfWork.Complete();
+            }
         }
 
         /// <summary>
@@ -168,7 +210,7 @@ namespace DS.Bll
                 Directory.CreateDirectory(Path.Combine(path, processCode, folder1));
             }
         }
-
+        
         #endregion
 
     }

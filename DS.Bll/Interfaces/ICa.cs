@@ -10,6 +10,7 @@ namespace DS.Bll.Interfaces
     {
         ValidationResultViewModel Add(CaViewModel model);
         ValidationResultViewModel Edit(CaViewModel model);
+        ValidationResultViewModel Delete(int id, string documentNo);
         CaViewModel Get(int id);
         IEnumerable<CaSearchViewModel> GetList(DataTableAjaxPost model);
     }

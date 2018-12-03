@@ -63,6 +63,10 @@ namespace DS.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("Delete")]
+        public IActionResult Delete(int id, string documentNo) => Ok(_ca.Delete(id, documentNo));
+
         [HttpGet("{id}")]
         public IActionResult Get(int id) => Ok(_ca.Get(id));
 
