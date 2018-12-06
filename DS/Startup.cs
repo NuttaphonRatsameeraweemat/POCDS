@@ -27,6 +27,7 @@ namespace DS
             services.ConfigureBll();
             services.ConfigureLoggerService();
             services.ConfigureCors();
+            services.ConfigurePolicy();
             services.ConfigureElasticSearch();
             services.ConfigureJwtAuthen(Configuration);
 
@@ -46,6 +47,8 @@ namespace DS
             app.ConfigureSwagger();
 
             app.UseCors("CorsPolicy");
+
+            app.ConfigureHandlerStatusPages();
 
             app.UseMvc();
         }

@@ -18,6 +18,7 @@ namespace DS.Bll.Context
         public const string CLAMIS_ORG = "Org";
         public const string CLAMIS_POS = "Pos";
         public const string CLAMIS_EMPNO = "EmpNo";
+        public const string CLAMIS_ROLE = "RoleUser";
 
         //ValueHelp Where Clause.
         public const string VALUE_HELP_STATUS = "TRANSSTATUS";

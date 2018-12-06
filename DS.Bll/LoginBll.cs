@@ -64,6 +64,7 @@ namespace DS.Bll
                 result = true;
                 _identity = new ClaimsIdentity();
                 _identity.AddClaim(new Claim(ClaimTypes.Name, $"BOONRAWD_LOCAL\\{login.Username}"));
+                _identity.AddClaim(new Claim(ConstantValue.CLAMIS_ROLE, "CA_DS_Role"));
                 _identity.AddClaim(new Claim(ConstantValue.CLAMIS_ORG, "10001416"));
                 _identity.AddClaim(new Claim(ConstantValue.CLAMIS_POS, "20000641"));
                 _identity.AddClaim(new Claim(ConstantValue.CLAMIS_EMPNO, "001754"));

@@ -1,10 +1,13 @@
 ﻿using DS.Bll;
 using DS.Bll.Interfaces;
+using DS.Bll.Models;
 using DS.Data;
 using DS.Data.Repository.Interfaces;
 using DS.Helper;
 using DS.Helper.Interfaces;
+using DS.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -133,6 +136,27 @@ namespace DS.Extensions
             app.UseMiddleware<Middleware>();
         }
 
+        public static void ConfigureHandlerStatusPages(this IApplicationBuilder app)
+        {
+            app.UseStatusCodePages(async context =>
+            {
+                if (context.HttpContext.Request.Path.StartsWithSegments("/api") &&
+                   (context.HttpContext.Response.StatusCode == 403))
+                {
+                    var model = new ValidationResultViewModel
+                    {
+                        ErrorFlag = true,
+                        Message = "Not Permission."
+                    };
+                    string json = JsonConvert.SerializeObject(model, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+                    await context.HttpContext.Response.WriteAsync(json);
+                }
+            });
+        }
+
         /// <summary>
         /// Add CORS Configuration.
         /// </summary>
@@ -147,6 +171,31 @@ namespace DS.Extensions
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+        }
+
+        /// <summary>
+        /// Add Policy Configuration.
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigurePolicy(this IServiceCollection services)
+        {
+            //Add Policy
+            var roleList = new List<string> { "CA_MA_Role","CA_DS_Role",
+                                              "PV_MA_Role","PV_DS_Role",
+                                              "BS_MA_Role","BS_DS_Role",
+                                              "XX_MA_Role","XX_DS_Role"};
+
+            foreach (var role in roleList)
+            {
+                //Add Policy
+                services.AddAuthorization(options =>
+                {
+                    options.AddPolicy(role, policy => policy.Requirements.Add(new RoleRequirement(role)));
+                });
+            }
+
+            services.AddSingleton<IAuthorizationHandler, RoleHandler>();
+
         }
 
         /// <summary>
@@ -176,9 +225,9 @@ namespace DS.Extensions
                      OnAuthenticationFailed = context =>
                      {
                          context.Response.StatusCode = (int)System.Net.HttpStatusCode.Unauthorized;
-                         var model = new
+                         var model = new ValidationResultViewModel
                          {
-                             context.Response.StatusCode,
+                             ErrorFlag = true,
                              Message = "Unauthorized."
                          };
                          string json = JsonConvert.SerializeObject(model, new JsonSerializerSettings
