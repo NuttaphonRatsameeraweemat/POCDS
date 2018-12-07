@@ -9,6 +9,9 @@ namespace DS.Bll.Context
         //Template format.
         public const string EMP_TEMPLATE = "คุณ{0} {1}";
 
+        //Response Header Content Type Format
+        public const string CONTENT_TYPEJSON = "application/json";
+
         //Datetime Format
         public const string DATETIME_YEARMONTHDAYTIME = "yyyyMMddHHmmss";
         public const string DATETIME_DAYMONTHYEAR = "dd/MM/yyyy";

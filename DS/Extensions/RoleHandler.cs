@@ -9,8 +9,17 @@ using System.Threading.Tasks;
 
 namespace DS.Extensions
 {
+    /// <summary>
+    /// Class Role Handler.
+    /// </summary>
     public class RoleHandler : AuthorizationHandler<RoleRequirement>
     {
+        /// <summary>
+        /// Validate role policy state.
+        /// </summary>
+        /// <param name="context">The AuthorizationHandlerContext.</param>
+        /// <param name="requirement">The RoleRequirement.</param>
+        /// <returns></returns>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                        RoleRequirement requirement)
         {
@@ -21,9 +30,7 @@ namespace DS.Extensions
             }
             else
             {
-                var redirectContext = context.Resource as AuthorizationFilterContext;
-                redirectContext.Result = new RedirectToActionResult("NotPermission", "ErrorHandler", null);
-                context.Succeed(requirement);
+                context.Fail();
             }
 
             return Task.CompletedTask;

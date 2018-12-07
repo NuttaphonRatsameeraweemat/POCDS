@@ -39,7 +39,7 @@ namespace DS.Controllers
         #region [Methods]
         
         [HttpGet]
-        [Authorize(Policy = "CA_MA_Role")]
+        [Authorize(Roles = "CA_MA_Role")]
         public IActionResult Get() => Ok(_menu.GenerateMenu("BOONRAWD_LOCAL\\ds01"));
 
         #endregion

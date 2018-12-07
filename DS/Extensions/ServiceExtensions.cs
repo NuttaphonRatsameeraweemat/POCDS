@@ -1,4 +1,5 @@
 ﻿using DS.Bll;
+using DS.Bll.Context;
 using DS.Bll.Interfaces;
 using DS.Bll.Models;
 using DS.Data;
@@ -136,22 +137,36 @@ namespace DS.Extensions
             app.UseMiddleware<Middleware>();
         }
 
+        /// <summary>
+        /// Config handle message status code 403.
+        /// </summary>
+        /// <param name="app"></param>
         public static void ConfigureHandlerStatusPages(this IApplicationBuilder app)
         {
             app.UseStatusCodePages(async context =>
             {
-                if (context.HttpContext.Request.Path.StartsWithSegments("/api") &&
-                   (context.HttpContext.Response.StatusCode == 403))
+                if (context.HttpContext.Response.StatusCode == 403 || context.HttpContext.Response.StatusCode == 401)
                 {
+                    string message = string.Empty;
+                    switch (context.HttpContext.Response.StatusCode)
+                    {
+                        case 403:
+                            message = "Not Permissino.";
+                            break;
+                        case 401:
+                            message = "Unauthorized.";
+                            break;
+                    }
                     var model = new ValidationResultViewModel
                     {
                         ErrorFlag = true,
-                        Message = "Not Permission."
+                        Message = message
                     };
                     string json = JsonConvert.SerializeObject(model, new JsonSerializerSettings
                     {
                         ContractResolver = new CamelCasePropertyNamesContractResolver()
                     });
+                    context.HttpContext.Response.ContentType = ConstantValue.CONTENT_TYPEJSON;
                     await context.HttpContext.Response.WriteAsync(json);
                 }
             });
@@ -236,7 +251,7 @@ namespace DS.Extensions
                          });
                          context.Response.OnStarting(async () =>
                          {
-                             context.Response.ContentType = "application/json";
+                             context.Response.ContentType = ConstantValue.CONTENT_TYPEJSON;
                              await context.Response.WriteAsync(json);
                          });
                          return System.Threading.Tasks.Task.CompletedTask;
