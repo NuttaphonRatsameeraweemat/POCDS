@@ -54,6 +54,7 @@ namespace DS.Extensions
             services.AddScoped<IEmployee, EmployeeBll>();
             services.AddScoped<IMenu, MenuBll>();
             services.AddScoped<ILogin, LoginBll>();
+            services.AddScoped<ICache, CacheBll>();
         }
 
         /// <summary>
